@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Register"
+    android:orientation="vertical"
+    android:background="#fff"
+    >
+<FrameLayout
+    android:layout_width="match_parent"
+    android:layout_height="273dp"
+    android:background="@drawable/p1">
+    <ImageView
+        android:id="@+id/imgview"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:src="@drawable/front_logo" />
+</FrameLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:hint="Email Name"
+            app:startIconDrawable="@drawable/ic_email"
+            app:hintTextColor="#4b3b16">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/Email">
+                >
+
+            </com.google.android.material.textfield.TextInputEditText>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:hint="Password"
+            android:layout_marginBottom="10dp"
+            app:hintTextColor="#4b3b16"
+            app:passwordToggleEnabled="true"
+            app:startIconDrawable="@drawable/ic_padlock"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword"
+                android:id="@+id/password">
+
+            </com.google.android.material.textfield.TextInputEditText>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Button
+            android:id="@+id/forgotPassword"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:text="Forgot Password ?"
+            android:textColor="#4b31b6"
+            android:backgroundTint="#fff"
+            android:layout_gravity="right"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            />
+
+
+
+        <Button
+            android:id="@+id/loginBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#fff"
+            android:text="Login"
+            android:layout_marginTop="10dp"
+            />
+
+        <Button
+            android:id="@+id/createText"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:text="New Here ?  Create Account"
+            android:textColor="#4b31b6"
+            android:backgroundTint="#fff"
+            android:layout_gravity="center"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            />
+    </LinearLayout>
+
+</LinearLayout>

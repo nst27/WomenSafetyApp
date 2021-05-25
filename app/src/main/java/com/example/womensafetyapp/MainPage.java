@@ -2,6 +2,8 @@ package com.example.womensafetyapp;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.content.Context;
@@ -12,13 +14,13 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorListener;
 import android.hardware.SensorManager;
+import android.location.Geocoder;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.telephony.SmsManager;
-import android.util.Log;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,20 +28,29 @@ import android.widget.Toast;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.protobuf.DescriptorProtos;
+
+import java.net.Inet4Address;
+import java.util.Calendar;
+import java.util.Date;
 
 
 public class MainPage extends AppCompatActivity implements SensorEventListener{
-    TextView username,phoneno,sendme;
+    TextView username,phoneno;
     private  SensorManager sensorManager;
     private  Sensor accelerometerSensor;
     private boolean isAccelerometerSensorAvailable,isNotFirstTime=false;
     private float currentX,currentY,currentZ,lastX,lastY,lastZ;
     private float xDiff,yDiff,zDiff;
     private float shakeThreshold=5f;
-    private Vibrator vibrator;
     private int count;
+    FirebaseDatabase rootnode;
+    public String message;
+    DatabaseReference reference;
     private FusedLocationProviderClient fusedLocationProviderClient;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,10 +59,11 @@ public class MainPage extends AppCompatActivity implements SensorEventListener{
 
         username = findViewById(R.id.musername);
         phoneno = findViewById(R.id.phoneno);
-        sendme = findViewById(R.id.sendwala);
 
+        //sensor
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 
+        //location
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
         if(sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)!=null){
@@ -61,7 +73,7 @@ public class MainPage extends AppCompatActivity implements SensorEventListener{
             username.setText("Accelerometer sensor not available");
             isAccelerometerSensorAvailable=false;
         }
-        //showData();
+
     }
 
 
@@ -72,8 +84,11 @@ public class MainPage extends AppCompatActivity implements SensorEventListener{
     public void onSensorChanged(SensorEvent sensorEvent) {
 
         Intent intent = getIntent();
-        String user_name = intent.getStringExtra("fullName");
+        final String user_name = intent.getStringExtra("fullName");
         final String phone_no = intent.getStringExtra("emergencyphone");
+
+        username.setText(user_name);
+        phoneno.setText(phone_no);
 
         currentX = sensorEvent.values[0];
         currentY = sensorEvent.values[1];
@@ -85,58 +100,74 @@ public class MainPage extends AppCompatActivity implements SensorEventListener{
             zDiff = Math.abs(lastZ - currentZ);
 
             if ((xDiff > shakeThreshold && yDiff > shakeThreshold) || (yDiff > shakeThreshold && zDiff > shakeThreshold) || (xDiff > shakeThreshold && zDiff > shakeThreshold)) {
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
 
-                if(getApplicationContext().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-                    //getlocation
-                    fusedLocationProviderClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
-                        @Override
-                        public void onSuccess(Location location) {
-                            if(location !=null){
-                                Double lat = location.getLatitude();
-                                Double lon = location.getLongitude();
-
-                                username.setText(""+lat);
-                                phoneno.setText(""+lon);
-                                sendme.setText(""+phone_no);
+                    if(getApplicationContext().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+                        //getlocation
+                        fusedLocationProviderClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+                            @Override
+                            public void onSuccess(Location location) {
+                                if(location !=null){
+                                    Double lat = location.getLatitude();
+                                    Double lon = location.getLongitude();
 
 
-                                if(getApplicationContext().checkSelfPermission(Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED){
-                                    try{
-                                        SmsManager smsManager = SmsManager.getDefault();
-                                        smsManager.sendTextMessage("+91"+phone_no,null,"Nishant here",null,null);
-                                        Toast.makeText(getApplicationContext(),"Pass",Toast.LENGTH_SHORT).show();
 
-                                    }catch (Exception e){
-                                        Toast.makeText(getApplicationContext(),"Failed",Toast.LENGTH_SHORT).show();
+                                    username.setText(""+lat);
+                                    phoneno.setText(""+lon);
+                                    message = "Hello this is "+user_name+" require help at Address link \n https://maps.google.com/?q="+lat+","+lon;
+                                    if(getApplicationContext().checkSelfPermission(Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED){
+                                        try{
+                                            SmsManager smsManager = SmsManager.getDefault();
+                                            smsManager.sendTextMessage("+91"+phone_no,null,message,null,null);
+
+                                            rootnode = FirebaseDatabase.getInstance();
+                                            reference = rootnode.getReference("logs");
+                                            Date currentTime = Calendar.getInstance().getTime();
+
+                                            logData ld = new logData(user_name,currentTime);
+                                            reference.child(user_name).setValue(ld);
+
+
+                                            Toast.makeText(getApplicationContext(),"Pass",Toast.LENGTH_SHORT).show();
+
+                                        }catch (Exception e){
+                                            Toast.makeText(getApplicationContext(),"Failed",Toast.LENGTH_SHORT).show();
+                                        }
+
+                                    }else{
+                                        requestPermissions(new String[]{Manifest.permission.SEND_SMS},1);
                                     }
 
                                 }
-                                else{
-                                    requestPermissions(new String[]{Manifest.permission.SEND_SMS},1);
-                                }
-
                             }
-                        }
-                    });
-                }else{
-                    requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},1);
+                        });
+                    }else{
+                        requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},1);
+                        //requestPermissions(new String[]{Manifest.permission.SEND_SMS},1);
+                    }
                 }
-            }
-
 
             }else{
             }
+        }
+
+
+
         lastX=currentX;
         lastY=currentY;
         lastZ=currentZ;
         isNotFirstTime=true;
-        }
-
+    }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
     }
+
+
+
+
     @Override
     protected void onResume(){
         super.onResume();

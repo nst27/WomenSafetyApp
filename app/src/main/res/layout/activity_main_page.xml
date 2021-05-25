@@ -13,7 +13,8 @@
         android:id="@+id/musername"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="30dp">
+        android:textSize="30dp"
+        android:textColor="#fff">
     </TextView>
 
     <TextView
@@ -21,7 +22,9 @@
         android:layout_marginTop="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="30dp">
+        android:textSize="30dp"
+        android:textColor="#fff"
+        >
 
     </TextView>
     <TextView
@@ -29,6 +32,33 @@
         android:layout_marginTop="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="30dp">
+        android:textSize="30dp"
+        android:textColor="#fff">
+    </TextView>
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/logoblack"
+        android:layout_marginTop="100dp">
+
+    </ImageView>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="0dp"
+        android:fontFamily="@font/abril_fatface"
+        android:gravity="center_horizontal"
+        android:text="Shake your Phone"
+        android:textSize="30dp"></TextView>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="Shake your phone and an emergency message will be sent to your registered number along with your location"
+        android:textSize="20dp"
+        android:gravity="center_horizontal"
+        android:fontFamily="@font/lobster">
+
     </TextView>
 </LinearLayout>
